@@ -29,7 +29,6 @@ ytdl_format_options = {
 }
 ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
 
-# --- VERİTABANI (SQLITE) KURULUMU ---
 conn = sqlite3.connect('oyuncular.db')
 c = conn.cursor()
 
