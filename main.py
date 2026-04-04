@@ -188,7 +188,7 @@ def ayar_cevir(secimler):
         sarkici_g = secimler['sarkici'].upper()
     return sarkici_g, secimler['zorluk'].upper(), secimler['raund']
 
-# --- OYUN İÇİ ŞIK (TAHMİN) BUTONLARI (TEMİZLİK SİSTEMLİ) ---
+(TEMİZLİK SİSTEMLİ) ---
 class SecenekButonu(discord.ui.Button):
     def __init__(self, etiket, dogru_cevap):
         super().__init__(label=etiket, style=discord.ButtonStyle.primary)
