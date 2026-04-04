@@ -47,7 +47,6 @@ c.execute('''CREATE TABLE IF NOT EXISTS envanter (kullanici_id INTEGER, unvan TE
 c.execute('''CREATE TABLE IF NOT EXISTS sunucular (guild_id INTEGER PRIMARY KEY, aktif INTEGER DEFAULT 0)''')
 conn.commit()
 
-# --- MARKET SİSTEMİ ---
 MARKET = {
     "nota çırağı": 1000, "meraklı plak": 1000, "acemi şifreci": 1000, "fısıldayan melodi": 1000, "şarkı çaylağı": 1000, "müzikal tomurcuk": 1000,
     "ritim gezgini": 2500, "melodi dedektifi": 2500, "akor avcısı": 2500, "ses izcisi": 2500, "gizemli kaset": 2500, "müzikal bulmaca": 2500,
@@ -64,7 +63,6 @@ EXACT_TITLES = {
     "bilmece üstadı": "Bilmece Üstadı", "evrensel virtüöz": "Evrensel Virtüöz", "şarkıların kâhini": "Şarkıların Kâhini", "notaların efendisi": "Notaların Efendisi", "altın sesli dahi": "Altın Sesli Dahi", "müzik ve gizem efsanesi": "Müzik ve Gizem Efsanesi"
 }
 
-# --- GLOBAL DURUM ---
 aktif_oyun_sayisi = 0
 
 async def bot_durumunu_guncelle():
@@ -74,7 +72,6 @@ async def bot_durumunu_guncelle():
     else:
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!help | /profil"))
 
-# --- SUNUCU KİLİDİ KONTROLLERİ ---
 def sunucu_aktif_mi(guild_id):
     if not TOPGG_LINK: return True 
     if not guild_id: return True
@@ -116,7 +113,6 @@ async def on_guild_join(guild):
             await channel.send(embed=embed)
             break
 
-# --- VERİTABANI İŞLEMLERİ ---
 def db_puan_getir(kullanici_id):
     c.execute("SELECT puan FROM profiller WHERE id = ?", (kullanici_id,))
     sonuc = c.fetchone()
@@ -151,7 +147,6 @@ def db_unvan_var_mi(kullanici_id, unvan):
     c.execute("SELECT 1 FROM envanter WHERE kullanici_id = ? AND unvan = ?", (kullanici_id, unvan))
     return c.fetchone() is not None
 
-# --- YARDIMCI FONKSİYONLAR ---
 def sarkicilari_bul():
     secenekler = [discord.SelectOption(label="🌟 KARIŞIK (HEPSİ)", value="karisik", description="Herkes çalar!")]
     for dosya in os.listdir('.'):
@@ -230,7 +225,6 @@ class TahminView(discord.ui.View):
         random.shuffle(secenekler)
         for secenek in secenekler: self.add_item(SecenekButonu(secenek, dogru_cevap))
 
-# --- AYAR VE DAVET MENÜLERİ ---
 class AyarSelect(discord.ui.Select):
     def __init__(self, placeholder, options, custom_id, row, max_vals=1):
         super().__init__(placeholder=placeholder, min_values=1, max_values=max_vals, options=options, custom_id=custom_id, row=row)
@@ -330,8 +324,7 @@ class CokluDavetView(discord.ui.View):
             await interaction.response.edit_message(content=f"💥 {interaction.user.mention} korktu ve daveti reddetti! İptal.", view=None)
             self.stop()
 
-# --- MERKEZİ AYAR ALMA FONKSİYONU ---
-async def ayarlari_al(ctx, secili=False): # BURADAKİ HATA DÜZELTİLDİ (secili_mod yerine secili oldu)
+async def ayarlari_al(ctx, secili=False): 
     if secili:
         view1 = CokluSarkiciView(ctx.author)
         msg = await ctx.send("🎤 **1. ADIM: Şarkıcı Seçimi**\nBirden fazla şarkıcı seçip 'İleri' butonuna bas:", view=view1)
@@ -353,7 +346,6 @@ async def ayarlari_al(ctx, secili=False): # BURADAKİ HATA DÜZELTİLDİ (secili
         if not view.basladi: return None, None
         return view.secimler, msg
 
-# --- ANA OYUN MOTORU (SENKRONİZE VE TEMİZ) ---
 async def oyun_motoru(ctx, secimler, oyuncular, ozel_kanal=None, eski_kanallar=None, takimlar=None, rekabetci=False, bahis=0):
     global aktif_oyun_sayisi
     aktif_oyun_sayisi += 1
@@ -421,7 +413,6 @@ async def oyun_motoru(ctx, secimler, oyuncular, ozel_kanal=None, eski_kanallar=N
 
             vc.play(discord.FFmpegPCMAudio(data['url'], **ffmpeg_options))
             
-            # --- KUSURSUZ SENKRONİZASYON ---
             await asyncio.sleep(1.5)
             
             tahmin_view = TahminView(sarki_adi, sarkici_verisi["sahte_siklar"], oyuncular, puanlar, rekabetci)
